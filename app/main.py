@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import engine, Base
-from app.api.routes import auth, protected
+from app.api.routes import auth, history, lessons, protected, questions
 
 # 🔥 TABLOLAR OTOMATİK OLUŞUR
 Base.metadata.create_all(bind=engine)
@@ -21,6 +21,9 @@ app.add_middleware(
 # 🔗 ROUTER'LAR
 app.include_router(auth.router)
 app.include_router(protected.router)
+app.include_router(history.router)
+app.include_router(lessons.router)
+app.include_router(questions.router)
 
 # ✅ DUMMY ENDPOINT (PUBLIC)
 @app.get("/dummy")
