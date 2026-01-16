@@ -18,15 +18,16 @@ def get_db():
         db.close()
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    try:
-        hashed = hash_password(user.password)
-        db_user = User(email=user.email, hashed_password=hashed)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return {"message": "User created", "user_id": db_user.id}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    hashed = hash_password(user.password)  # kendi hash fonksiyonun
+    db_user = User(
+        email=user.email,
+        hashed_password=hashed,
+        role=user.role  # <-- buraya dikkat
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return {"id": db_user.id, "email": db_user.email, "role": db_user.role}
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: UserLogin, db: Session = Depends(get_db)):
