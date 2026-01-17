@@ -10,3 +10,7 @@ def me(current_user: dict = Depends(get_current_user)):
 @router.get("/dummy")
 def dummy(current_user: dict = Depends(get_current_user)):
     return {"message": "Hello, this is a dummy endpoint!", "user": current_user}
+
+@router.get("/nextquest")
+def dummy(current_user: dict = Depends(get_current_user)):
+    return {"message": "Hello, this is a dummy endpoint!", "user": current_user}

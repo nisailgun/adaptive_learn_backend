@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from enum import Enum
 from typing import List, Optional
 from datetime import datetime
@@ -51,6 +51,7 @@ class Lesson(LessonBase):
 # Soru şemaları
 class QuestionBase(BaseModel):
     text: str
+    correct_answer:str
     difficulty: DifficultyLevel
 
 class QuestionCreate(QuestionBase):
@@ -58,6 +59,7 @@ class QuestionCreate(QuestionBase):
 
 class QuestionUpdate(BaseModel):
     text: Optional[str] = None
+    correct_answer: Optional[str] = None
     difficulty: Optional[DifficultyLevel] = None
     lesson_id: Optional[int] = None
 
@@ -68,19 +70,21 @@ class Question(QuestionBase):
     class Config:
         orm_mode = True
 
-# History şemaları
 class HistoryBase(BaseModel):
     student_id: int
     question_id: int
     time_taken_seconds: float
+    correct: Optional[float] = None
 
 class HistoryCreate(HistoryBase):
-    pass
+    answered_at: Optional[datetime] = None  # <-- bu satırı ekledik
 
 class HistoryUpdate(BaseModel):
-    time_taken_seconds: Optional[float] = None
-    question_id: Optional[int] = None
     student_id: Optional[int] = None
+    question_id: Optional[int] = None
+    time_taken_seconds: Optional[float] = None
+    correct: Optional[float] = None
+    answered_at: Optional[datetime] = None
 
 class History(HistoryBase):
     id: int
@@ -88,4 +92,44 @@ class History(HistoryBase):
     question: Question
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # eski orm_mode yerine bu
+        
+class QuestionResponse(BaseModel):
+    id: int
+    text: str
+    difficulty: DifficultyLevel
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AnswerSubmit(BaseModel):
+    email: str
+    question_id: int
+    answer: str
+    time_taken_seconds: float
+
+
+class NextQuestionRequest(BaseModel):
+    email: str
+    previous_question_id: Optional[int] = None
+    previous_correct: Optional[int] = None  # 1 = doğru, 0 = yanlış
+    time_taken_seconds: Optional[float] = None
+
+
+class NextQuestionResponse(BaseModel):
+    previous_correct: Optional[int]
+    question: Optional[QuestionResponse]
+    message: Optional[str]
+    
+
+class AnswerAndNextRequest(BaseModel):
+    email: str
+    question_id: int
+    answer: str
+    time_taken_seconds: float
+
+
+class AnswerAndNextResponse(BaseModel):
+    correct: int
+    next_question: QuestionResponse | None
+    message: str | None

@@ -1,4 +1,4 @@
-from app.models.user import Question
+from app.models.user import DifficultyLevel, Question
 from app.schemas.user import QuestionCreate, QuestionUpdate
 from sqlalchemy.orm import Session
 
@@ -7,6 +7,7 @@ class QuestionService:
         db_question = Question(
             lesson_id=question.lesson_id,
             text=question.text,
+            correct_answer=question.correct_answer,
             difficulty=question.difficulty
         )
         db.add(db_question)
@@ -37,3 +38,25 @@ class QuestionService:
         db.delete(db_question)
         db.commit()
         return db_question
+    
+    @staticmethod
+    def get_prioritized_question(db: Session, lesson_id: int):
+        priorities = [
+            DifficultyLevel.easy,
+            DifficultyLevel.medium,
+            DifficultyLevel.hard
+        ]
+
+        for level in priorities:
+            question = (
+                db.query(Question)
+                .filter(
+                    Question.lesson_id == lesson_id,
+                    Question.difficulty == level
+                )
+                .first()
+            )
+            if question:
+                return question
+
+        return None
