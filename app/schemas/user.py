@@ -133,3 +133,15 @@ class AnswerAndNextResponse(BaseModel):
     correct: int
     next_question: QuestionResponse | None
     message: str | None
+
+class LessonAIPromptResponse(BaseModel):
+    lesson_id: int
+    lesson_title: str
+    lesson_difficulty: str
+    prompt: str
+    
+class LessonAIResponse(BaseModel):
+    lesson_id: int
+    lesson_title: str
+    lesson_difficulty: str
+    ai_response: str
