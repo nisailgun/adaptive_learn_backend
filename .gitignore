@@ -1,9 +1,10 @@
 # Node.js bağımlılıkları
 node_modules/
 
-# Vite / React build dosyaları
+# Build çıktıları
 dist/
 build/
+.vite/
 
 # Log dosyaları
 npm-debug.log*
@@ -14,11 +15,15 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Environment dosyaları
+# Environment dosyaları (SECRET)
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # IDE / editör dosyaları
 .vscode/
 .idea/
+
+# Python (backend varsa)
+__pycache__/
+*.pyc
